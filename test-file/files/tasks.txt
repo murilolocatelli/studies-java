@@ -1,0 +1,7 @@
+
+- maxAttempts = 10 quando não envia para DLQ - É um bug, será resolvido na versão 2021.0.0 do spring cloud - 3.2.0 spring cloud stream
+- Alterar para enviar msg de falha
+
+- Materiais observabilidade
+
+- Dash template APM
