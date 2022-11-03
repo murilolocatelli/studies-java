@@ -1,0 +1,60 @@
+application:
+  env: ${ENV:development}
+  name: '@pom.name@'
+  description: '@pom.description@'
+  version: '@pom.version@'
+
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+
+management:
+  endpoint:
+    health:
+      show-details: always
+      group:
+        readiness:
+          include: readinessState
+  health:
+    probes:
+      enabled: true
+
+  lifecycle:
+    timeout-per-shutdown-phase: 60s
+
+spring:
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:29092
+          autoCreateTopics: true
+          autoAddPartitions: true
+
+        bindings:
+          createAccount-out-0:
+            producer:
+              sync: true #default false
+              configuration:
+                acks: -1
+          updateAccount-out-0:
+            producer:
+              sync: true #default false
+              configuration:
+                acks: -1
+
+      bindings:
+        createAccount-out-0:
+          destination: business-partner_create-account
+          contentType: application/json
+          producer:
+            partition-count: 1 #default 1
+        updateAccount-out-0:
+          destination: business-partner_update-account
+          contentType: application/json
+          producer:
+            partition-count: 1 #default 1
+
+  data:
+    mongodb:
+      uri: "mongodb://root:root@localhost:27017/poc-retry-manager"

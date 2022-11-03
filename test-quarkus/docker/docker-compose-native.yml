@@ -1,0 +1,46 @@
+version: '2.2'
+
+services:
+  prometheus-native:
+    image: murilo/test-quarkus-prometheus-native:latest
+    build:
+      context: ../
+      dockerfile: docker/prometheus/Dockerfile-native
+    ports:
+      - 9090:9090
+    networks:
+      - mysql-network
+    depends_on:
+      - app-native
+
+  app-native:
+    image: murilo/test-quarkus-app-native:latest
+    #cpus: '2'
+    #mem_limit: '300M'
+    build:
+      context: ../
+      dockerfile: docker/app/Dockerfile-native
+    environment:
+      QUARKUS_DATASOURCE_URL: jdbc:mysql://mysql:3306/test-quarkus?autoReconnect=true
+    networks:
+      - mysql-network
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql/mysql-server:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=test-quarkus
+      - MYSQL_PASSWORD=123
+      - MYSQL_DATABASE=test-quarkus
+    ports:
+      - 3306:3306
+    networks:
+      - mysql-network
+
+networks:
+  mysql-network:
+    driver: bridge

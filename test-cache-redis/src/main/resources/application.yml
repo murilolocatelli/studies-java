@@ -1,0 +1,40 @@
+application:
+  env: ${ENV:development}
+  name: '@pom.name@'
+  description: '@pom.description@'
+  version: '@pom.version@'
+
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+
+management:
+  endpoint:
+    health:
+      show-details: always
+      group:
+        readiness:
+          include: readinessState,redis
+  health:
+    probes:
+      enabled: true
+
+  lifecycle:
+    timeout-per-shutdown-phase: 60s
+
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    jedis:
+      pool:
+        max-active: 20
+        max-idle: 20
+        min-idle: 10
+
+  cache:
+    type: redis
+    cache-names: student
+    redis:
+      time-to-live: 10m

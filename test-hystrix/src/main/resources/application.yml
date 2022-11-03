@@ -1,0 +1,8 @@
+application:
+  env: ${ENV:development}
+  name: '@pom.name@'
+  description: '@pom.description@'
+  version: '@pom.version@'
+
+server:
+  port: ${PORT:8080}

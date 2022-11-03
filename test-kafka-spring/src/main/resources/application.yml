@@ -1,0 +1,23 @@
+application:
+  env: ${ENV:development}
+  name: '@pom.name@'
+  description: '@pom.description@'
+  version: '@pom.version@'
+
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+
+management:
+  endpoint:
+    health:
+      show-details: always
+      group:
+        readiness:
+          include: readinessState
+  health:
+    probes:
+      enabled: true
+
+  lifecycle:
+    timeout-per-shutdown-phase: 60s

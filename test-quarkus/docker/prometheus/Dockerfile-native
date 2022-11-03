@@ -1,0 +1,26 @@
+####
+# This Dockerfile is used in order to build a container that runs the Quarkus application in native (no JVM) mode
+#
+# Before building the container image run:
+#
+# ./mvnw package -Pnative
+#
+# Then, build the image with:
+#
+# docker build -f src/main/docker/Dockerfile.native -t quarkus/code-with-quarkus .
+#
+# Then run the container using:
+#
+# docker run -i --rm -p 8080:8080 quarkus/code-with-quarkus
+#
+###
+FROM prom/prometheus
+
+COPY docker/prometheus/prometheus-native.yml /etc/prometheus/prometheus.yml
+
+EXPOSE 9090
+
+CMD [ "--config.file=/etc/prometheus/prometheus.yml", \
+      "--storage.tsdb.path=/prometheus", \
+      "--web.console.libraries=/usr/share/prometheus/console_libraries", \
+      "--web.console.templates=/usr/share/prometheus/consoles" ]

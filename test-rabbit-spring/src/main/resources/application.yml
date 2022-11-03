@@ -1,0 +1,50 @@
+application:
+  env: ${ENV:development}
+  name: '@pom.name@'
+  description: '@pom.description@'
+  version: '@pom.version@'
+
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+
+management:
+  endpoint:
+    health:
+      show-details: always
+      group:
+        readiness:
+          include: readinessState,rabbit
+  health:
+    probes:
+      enabled: true
+
+spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: hermes
+    listener:
+      simple:
+        concurrency: 10
+        prefetch: 250
+        default-requeue-rejected: false
+
+  lifecycle:
+    timeout-per-shutdown-phase: 60s
+
+rabbitmq:
+  exchange:
+    hermes:
+      name: hermes-exchange
+  queue:
+    hermes-sms:
+      name: hermes-sms-queue
+      retry: 3
+      ttl: 30000
+    hermes-whatsApp:
+      name: hermes-whatsApp-queue
+      retry: 3
+      ttl: 30000

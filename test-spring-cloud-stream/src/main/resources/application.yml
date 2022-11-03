@@ -1,0 +1,47 @@
+application:
+  env: ${ENV:development}
+  name: '@pom.name@'
+  description: '@pom.description@'
+  version: '@pom.version@'
+
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+
+management:
+  endpoint:
+    health:
+      show-details: always
+      group:
+        readiness:
+          include: readinessState
+  health:
+    probes:
+      enabled: true
+
+  lifecycle:
+    timeout-per-shutdown-phase: 60s
+
+spring:
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:29092
+      bindings:
+        order-in:
+          destination: my-topic-order3
+          group: test-spring-cloud-stream-group
+          consumer:
+            maxAttempts: 5
+            concurrency: 3
+            enableDlq: true
+            dlqName: my-topic-order3-dlq
+            autoCommitOnError: true
+            autoCommitOffset: true
+            backOffInitialInterval: 200
+            #retryable-exceptions: java.lang.RuntimeException=true
+        order-out:
+          destination: my-topic-order3
+          producer:
+            partition-count: 10

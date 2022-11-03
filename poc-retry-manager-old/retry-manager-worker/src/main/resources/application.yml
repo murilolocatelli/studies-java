@@ -1,0 +1,117 @@
+application:
+  env: ${ENV:development}
+  name: '@pom.name@'
+  description: '@pom.description@'
+  version: '@pom.version@'
+
+server:
+  port: ${PORT:8083}
+  shutdown: graceful
+
+management:
+  endpoint:
+    health:
+      show-details: always
+      group:
+        readiness:
+          include: readinessState
+  health:
+    probes:
+      enabled: true
+
+  lifecycle:
+    timeout-per-shutdown-phase: 60s
+
+spring:
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:29092
+          autoCreateTopics: false
+          autoAddPartitions: false
+
+        bindings:
+          createAccount-in-0:
+            consumer:
+              enableDlq: true
+              dlqName: business-partner_create-account-DLQ
+              autoCommitOnError: true
+              autoCommitOffset: true
+              configuration:
+                max.poll.interval.ms: 30000 #default 300000
+                max.poll.records: 50 #default 500
+          createAccountDlq-in-0:
+            consumer:
+              enableDlq: false
+              autoCommitOnError: true
+              autoCommitOffset: true
+              configuration:
+                max.poll.interval.ms: 30000 #default 300000
+                max.poll.records: 50 #default 500
+          updateAccount-in-0:
+            consumer:
+              enableDlq: true
+              dlqName: business-partner_update-account-DLQ
+              autoCommitOnError: true
+              autoCommitOffset: true
+              configuration:
+                max.poll.interval.ms: 30000 #default 300000
+                max.poll.records: 50 #default 500
+          updateAccountDlq-in-0:
+            consumer:
+              enableDlq: false
+              autoCommitOnError: true
+              autoCommitOffset: true
+              configuration:
+                max.poll.interval.ms: 30000 #default 300000
+                max.poll.records: 50 #default 500
+      
+      bindings:
+        createAccount-in-0:
+          destination: business-partner_create-account
+          contentType: application/json
+          group: retry-manager-group
+          consumer:
+            concurrency: 1 #default 1
+            maxAttempts: 3 #default 3
+            backOffInitialInterval: 1000 #default 1000
+            backOffMaxInterval: 10000 #default 10000
+            backOffMultiplier: 2.0 #default 2.0
+        createAccountDlq-in-0:
+          destination: business-partner_create-account-DLQ
+          contentType: application/json
+          group: retry-manager-group
+          consumer:
+            concurrency: 1 #default 1
+            maxAttempts: 1 #default 3
+            backOffInitialInterval: 1000 #default 1000
+            backOffMaxInterval: 10000 #default 10000
+            backOffMultiplier: 2.0 #default 2.0
+        updateAccount-in-0:
+          destination: business-partner_update-account
+          contentType: application/json
+          group: retry-manager-group
+          consumer:
+            concurrency: 1 #default 1
+            maxAttempts: 3 #default 3
+            backOffInitialInterval: 1000 #default 1000
+            backOffMaxInterval: 10000 #default 10000
+            backOffMultiplier: 2.0 #default 2.0
+        updateAccountDlq-in-0:
+          destination: business-partner_update-account-DLQ
+          contentType: application/json
+          group: retry-manager-group
+          consumer:
+            concurrency: 1 #default 1
+            maxAttempts: 1 #default 3
+            backOffInitialInterval: 1000 #default 1000
+            backOffMaxInterval: 10000 #default 10000
+            backOffMultiplier: 2.0 #default 2.0
+      
+      function:
+        definition: createAccount;createAccountDlq;updateAccount;updateAccountDlq
+
+  data:
+    mongodb:
+      uri: "mongodb://root:root@localhost:27017/poc-retry-manager"
