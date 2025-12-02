@@ -9,6 +9,7 @@ import scala.Tuple2;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
@@ -89,6 +90,9 @@ public class Main {
 
         List<Tuple2<Long,String>> results = sorted.take(10);
         results.forEach(System.out::println);
+
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
 
         sparkContext.close();
     }
