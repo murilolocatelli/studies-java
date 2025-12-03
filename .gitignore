@@ -31,3 +31,6 @@ out/*
 !**/out/
 
 target/
+
+### Mac OS ###
+.DS_Store
