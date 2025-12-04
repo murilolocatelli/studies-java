@@ -42,11 +42,15 @@ public class InMemoryDataset {
 
         StructType structType = new StructType(structFields);
 
-        Dataset<Row> df = sparkSession.createDataFrame(inMemory, structType);
+        Dataset<Row> results = sparkSession.createDataFrame(inMemory, structType);
 
-        df.createOrReplaceTempView("logging_table");
+        results.createOrReplaceTempView("logging_table");
+        results = sparkSession.sql("select level, date_format(datetime, 'MMMM') as month from logging_table");
+        //results.show();
 
-        sparkSession.sql("select level, count(datetime) from logging_table group by level").show();
+        results.createOrReplaceTempView("logging_table");
+        results = sparkSession.sql("select level, month, count(1) as total from logging_table group by level, month");
+        results.show();
 
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine();
